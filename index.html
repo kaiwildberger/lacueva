@@ -151,6 +151,7 @@
             overflow-y:auto; /* NO SCROLL FOR YOU edit: fucj */
             scrollbar-width:none;
             min-width:500px;
+            transition:border-bottom 0.2s ease;
         }
 
         #textarea::-webkit-scrollbar {
@@ -310,7 +311,7 @@
         }
     </style>
     <script>
-        // this is basically Do Not Touch type code. i dont know what it does but
+        // this is basically Do Not Touch type code. I dont know what it does but
         // it doesnt look good when i fuck with it
         let percentHeight = .85
         let fancymath = (100/window.innerHeight)*10
@@ -324,6 +325,18 @@
         document.querySelector('.panel').style.height = window.innerHeight*percentHeight+"px";
 
         document.querySelector(":root").style.setProperty("--halfPadding", (window.innerWidth/2)+"px")
+
+        document.getElementById('textarea').addEventListener("scroll", () => {
+            let textarea = document.getElementById('textarea');
+
+            //  && textarea.scrollTop - textarea.scrollTopMax > 0)
+            if(textarea.scrollTop - textarea.scrollTopMax <= 15) {
+                // document.getElementById('textarea').style.borderBottom = '1px solid #888'
+            } else {
+                document.getElementById('textarea').style.borderBottom = 'none'
+            }
+            console.log('scroll')
+        })
     </script>
 
     <script src="./ingine.js" type="application/javascript"></script>

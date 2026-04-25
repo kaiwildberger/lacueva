@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html> <!-- done properly this One time :P -->
+    <head>
+        <title>...</title>
+    </head>
+    <body>
+        <div class="container">
+            <div class="pagetitle" align="center">interactive fictions by kai wildberger</div>
+            <div class="carousel">
+                <!--
+                title happens in the bespoke font for the game. if i can replicate the color and style of the title that'd be great too
+                description pokes up on hover.
+                -->
+                <a class="card" id="cueva" href="./lacueva/">
+                    <div align="center" class="title">Cave Gulch</div>
+                    <div class="description">Rediscover an old childhood hangout spot deep in the woods.</div>
+                </a>
+                <!-- we like semantically correct and accessible html -->
+                <a class="card" id="lookout" href="./lookout/">
+                    <div align="center" class="title">Eagle Peak</div> 
+                    <div class="description">Stargazing would have been easy tonight.</div>
+                </a>
+                <!-- <div class="item">bfgjfhkdkj</div>
+                <div class="item">lJKHFG4KDL</div>
+                <div class="item">Yayyy :P</div>
+                <div class="item">Wahoo!!</div>
+                <div class="item">Yippee!!</div> -->
+            </div>
+        </div>
+        <style>
+            @import url('https://fonts.googleapis.com/css2?family=Courier+Prime&family=EB+Garamond&display=swap');
+
+            @font-face {
+                font-family: "Wilden";
+                src: url("./lookout/assets/Wilden.ttf");
+            }
+
+            @font-face {
+                font-family: "Celestial";
+                src: url("./lacueva/assets/Celestial\ Typeface.ttf");
+            }
+            :root {
+                --dark-brown: #441b08;
+                --light-brown: #6d4f02;
+            }
+            html {height:100%;}
+
+            /*
+
+            fix this shit the background is Disgusting
+
+            */
+
+            body {
+                /* background-color:var(--dark-brown); */
+                height:100%;
+                width:100%;
+                /* background-image:linear-gradient(#f9f0ff 10%, transparent 100%), url("background.jpg"); */
+                background-image:url("background.jpg");
+                background-size:cover;
+                font-family: 'EB Garamond';
+                overflow:hidden;
+            }
+
+            .binderpaper {
+                --papercolor: #85a5ff;
+                --stripecolor: red;
+                background-image: linear-gradient(to bottom, #fff calc(1em - 1px), var(--papercolor) calc(1em - 1px), var(--papercolor) 1em, #fff 1em);
+	            background-size: 100% 1.5em;
+	            background-repeat: repeat-y;
+            }
+
+
+
+            .carousel {
+                position:absolute;
+                width:100%;
+                height:100%;
+                /* transform-style:preserve-3d; */
+                display:flex;
+                flex-flow: row wrap;
+                justify-content: center;
+                margin-top:calc(10%);
+            }
+            .card {
+                font-size:2em;
+                color:color-mix(in lab, var(--light-brown) 80%, #fff 20%);
+                border:2px solid color-mix(in lab, var(--dark-brown) 30%, #000 70%);
+                border-radius:5px;
+                width:350px;
+                height:200px;
+                cursor:pointer;
+                display:flexbox;
+                position:relative;
+                /* overflow:hidden; */
+                padding-top:5px;
+                margin:40px;
+                text-decoration: none;
+            }
+            .card:hover .description {
+                bottom: 4em;
+                opacity:1;
+            }
+            .card:hover .title {
+                /* transform: translateY(-2em); */
+                opacity:0.1;
+            }
+            .card .title { /* align center? */
+                font-size:2em;
+                bottom:0em;
+                opacity:1;
+                transition:opacity 0.25s ease, transform 0.2s ease;
+            }
+            .card .description {
+                position:absolute;
+                margin:8px;
+                left:16px;
+                bottom:-1em;
+                font-size:0.7em;
+                opacity: 0;
+                transition: opacity 0.2s ease, bottom 0.2s ease;
+            }
+            #cueva {
+                color:white;
+                background:radial-gradient(#6d4f02,#441b08 70%);
+            }
+            #cueva > .title { font-family:'Celestial';color:#aa8200;text-shadow:10px 5px color-mix(in srgb, black 90%, #aa8200); }
+            #lookout {
+                background-image:url("./lookout/assets/p20_bg.png");
+                background-size:cover;
+                background-color: var(--dark-brown);
+                background-blend-mode: multiply;
+                color:white;
+            }
+            #lookout > .title {
+                font-family:'Wilden';
+                color:#aa8200;
+                text-shadow:10px 5px color-mix(in srgb, black 90%, #aa8200);
+                margin-top:55px;
+            }
+            .pagetitle {
+                margin:1em;
+                font-size:2em;
+                color:#f9f0ff;
+                height:fit-content;
+                width:fit-content;
+                position:absolute;
+                bottom:0;
+                /* transform:rotateZ(90deg) translate(75%, 500%); */
+            }
+            @media screen and (max-width:875px) {
+                .pagetitle {
+                    left:0;
+                    transform:rotateZ(90deg) translate(-50%, 500%);
+                }
+            }
+            /*
+            light brown: #6d4f02
+            dark brown: #441b08
+            */
+        </style>
+    </body>
+</html>

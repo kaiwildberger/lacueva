@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<head>
+    <title>A Night at the Peak</title>
+    <meta type="description" content="a short interactive fiction">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body>
+    <div style="height:100%; margin:0; padding:0;">
+        <!-- <div class="blurbox"></div> -->
+        <!-- this blur box thing would ideally look Really Nice but it sucks bc chrome sucks so i Wont do it. maybe its cleaner like this anyway -->
+        <div class="panel">
+            <div class="choicearea">
+                <ol id="choices">
+                    <li id="begin" class="choice">Begin</li>
+                </ol>
+            </div>
+            <div id="textarea">
+                <p class="title">Eagle&nbsp;Peak<br><br><br>
+
+                <!-- to do this one i need more of the pseudoelement/subtitle kind of things but like arranged nicely -->
+                <!-- <p class="title">A Night at the Peak<br><br><br> -->
+                    
+                <p id="newtextmarker"></p>
+                <div id="scrollAnchor"></div>
+            </div>
+        </div>
+        <!-- <div class="afterpanel"></div> -->
+    </div>
+    <p id="debug" style="position:absolute; bottom:0; left:10;"></p>
+    <!-- <img id="bg" src="./asfalt-light.png"/> -->
+    <!-- <svg style="display:none;">
+        <defs>
+            <filter id="blurFilter">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="3"/>
+              </filter>
+        </defs>
+    </svg> -->
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Courier+Prime&family=EB+Garamond&display=swap');
+        @font-face {
+            font-family: "Celestial";
+            src: url("./assets/Celestial\ Typeface.ttf");
+        }
+        @font-face {
+            font-family: "Granjon";
+            src: url("assets/Granjon.otf");
+        }
+        @font-face {
+            font-family: "Wilden";
+            src: url("assets/Wilden.ttf");
+        }
+        :root {
+            --halfPadding: 8em;
+        }
+        /*
+        for mobile:
+            performance sucks shit (the opacity filter is the Culprit)
+            it Does x wiggle slightly on my phone. something is too wide?
+            maybe pull the textarea width back a tiny bit? to line up with padding on left side
+            there's that stupid brown bit at the bottom past the image that hangs out
+        */
+        @media (max-width:1200px) {
+            body { overflow-x:hidden !important; overflow-y:hidden !important; }
+            .panel { 
+                padding:0 0 0 8px !important;
+                width:fit-content !important;
+                margin:0 0 0 8px !important;
+            }
+            .title { font-size:4em !important; overflow-y:hidden; }
+            #textarea { 
+                min-width:4em !important;
+                width:calc(var(--halfPadding) * 1.8);
+            }
+
+            /* i hate mobile. everyone should browse the web on normal computers. fuck phones */
+        }
+        @media screen and (-webkit-min-device-pixel-ratio: 0) and (min-resolution: 0.001dpcm) { /* chrome for the -webkit-mask-image blur */
+            .panel {
+                --gradient: linear-gradient(0deg, black 75%, transparent 100%);
+                -webkit-mask-image:var(--gradient);
+                /* background:var(--gradient); */
+            }
+        }
+
+        /* hopes and dreams:
+            put a border line on the textarea so the bottom cutoff of the text Exists (instead of just disappearing)
+            get the damb chosen/selected indicators working. or at least not as broken as it currently is
+            Beta Read Beta Read Beta Read. is it all consistent?
+        */
+
+        body {
+            --choice-primary:#aa8200;
+            --choice-hover:color-mix(in srgb, black 20%, var(--choice-primary));
+            --choice-chosen:color-mix(in srgb, black 40%, var(--choice-primary));
+            --choice-active:skyblue;
+            --slide-height:0px;
+            --slide-height:0px;
+            --borderColor:white;
+            transition: var(--borderColor) 5s ease;
+            background-color:#4B5320;
+            /* background-image:url("./asfalt-light.png"); */
+            font-family:'Granjon';
+            font-size:1.2em;
+            overflow-y:hidden;
+        }
+        body::before {
+            content:'';
+            width:100%;
+            height:100%;
+            background-image:url("./assets/p20_bg.png");
+            /* background-image:url("./assets/stupidbg.jpg"); */
+            background-size:cover;
+            mix-blend-mode:multiply;
+            /* https://www.fs.usda.gov/eng/facilities/documents/1938_USDA-FS_StdLookoutPlans.pdf */
+            position:absolute;
+            top:0;
+            left:0;
+            opacity:1;
+        }
+        body::after {
+            content:'';
+            position:absolute;
+            width:100%;
+            height:100%;
+            top:0;
+            left:0;
+
+            /* background:radial-gradient(#253d2d,#272727 70%); */
+            background:radial-gradient(#6d4f02,#441b08 70%);
+            opacity:0.5;
+            z-index:-1;
+        }
+        /* #bg {
+            position:absolute;
+            top:0;
+            width:100%;
+            height:100%;
+            object-fit:cover;
+            opacity:.6;
+        } */
+        /* the scrollbar is ugly as hell but Apparently there is literally nothing i can do??? help */
+        /* also the blur thing looks like shit on chrome */
+        .panel {
+            min-height:70%;
+            height:100%;
+            width:50%;
+            padding:0 6em 0 6em;
+            /* border:2px solid black; */
+            margin:0 auto 0 auto;
+            /* padding-bottom:12px; */
+            display:flex;
+            /* overflow-y:auto; */
+            /* overflow-x:hidden; */
+            word-wrap:normal;
+            flex-direction:column-reverse;
+            /* --blurGradient: linear-gradient(0deg, black 75%, transparent 100%); */
+            /* mask: var(--blurGradient); */
+            /* background: var(--blurGradient); */
+            /* filter:url("#blurFilter"); /* i dont think this will ever work unless i really position:absolute some shit */
+        }
+        #textarea {
+            padding:0 8px 0 8px;
+            color:white;
+            line-height:1.6;
+            overflow-y:auto; /* NO SCROLL FOR YOU edit: fucj */
+            scrollbar-width:none;
+            min-width:500px;
+            transition:border-bottom 0.2s ease;
+        }
+
+        #textarea::-webkit-scrollbar {
+            display:none;
+        }
+        #textarea > p {
+            animation:newtext 0.2s ease;
+            line-break: normal;
+            /* overflow-anchor:none; */
+        }
+        #scrollAnchor {
+            height:1px;
+            /* border:1px solid white; */
+            /* overflow-anchor:auto; */
+            /* so sad this doesnt work */
+        }
+        div.spacer {
+            margin:19.2px; /* this is what the inspector told me. weird. */
+        }
+        .afterpanel {
+            content:'';
+            height:100%;
+            width:38%;
+            opacity:0;
+            min-width:500px;
+            position:absolute;
+            top:0;
+            left:calc(50% - 42% / 2); /* 8% ??? */
+            z-index:-1;
+            border-left:20px solid var(--borderColor);
+            border-right:20px solid var(--borderColor);
+            -webkit-box-reflect:below;
+            filter:blur(5px);
+            animation-direction:alternate;
+            /* animation: pulse 30s infinite; */
+            /* transition: opacity 8s ease; */
+        }
+        @keyframes slideup {
+            from {
+                margin-bottom:calc(-1 * var(--slide-height) - 4px);
+                /* margin-bottom:0; */
+            }
+            to {
+                margin-bottom:var(--slide-height / 2);
+            }
+        }
+        @keyframes pulse {
+            0% {
+                opacity:.6;
+            }
+            50% {
+                opacity: .2;
+            }
+            100% {
+                opacity:.6;
+            }
+        }
+        @keyframes newtext {
+            from {
+                filter:blur(1px);
+            }
+            to {
+                filter:blur(0px);
+            }
+        }
+        .choicearea {
+            /* border:1px solid black; */
+            margin:8px 0 32px 0;
+        }
+        #choices {
+            opacity:1;
+            transition:opacity 0.2s ease;
+        }
+        .choice {
+            cursor:pointer;
+            user-select:none;
+            margin-bottom:6px;
+            color:var(--choice-primary);
+            transition: color 0.1s ease;
+        }
+        .choice:hover { 
+            color:var(--choice-hover);
+            /* text-shadow: 0px 0px 20px color-mix(in srgb, white 10%, var(--choice-hover)); */
+        }
+        .choice:active {
+            color:var(--choice-active);
+        }
+
+        /*  copied over from the Sprouts experiment.
+            i dont think i want to use the polaroids for this one actually
+            i feel like it might be Too Noisy visually. keep it clean.
+        */
+        .polaroid {
+            background-color:white;
+            display:inline-block;
+            cursor:pointer;
+            margin:1em;
+            width:fit-content;
+            border:1em solid white;
+            /* use border-image for less clean lines around it? */
+            border-bottom:1em solid white;
+            font-family:"Boston 1851";
+            transition:transform 0.15s ease;
+            /* animation-fill-mode: forwards; */
+        }
+        .polaroid:nth-of-type(1) {
+            transform:rotate(-8deg) translate(0px, 18px);
+        }
+        .polaroid:nth-of-type(1):hover {
+            transform:rotate(-8deg) translate(0px, -16px);
+        }
+
+        .polaroid:nth-of-type(2):hover {
+            transform:translate(0px, -16px);
+        }
+
+        .polaroid:nth-of-type(3) {
+            transform:rotate(8deg) translate(0px, 18px);
+        }
+        .polaroid:nth-of-type(3):hover {
+            /* transform:rotate(2deg) translate(0px, -16px); 
+            this looks too weird. keeping it for the Idea though */
+            transform:rotate(8deg) translate(0px, -16px);
+        }
+        .polaroid p { margin:.5em; }
+        .polaroid img { width:8em; background-color:lightgrey; }
+        .title {
+            font-family:'Wilden';
+            font-size:7em;
+            position:absolute;
+            /* border:1px solid white; */
+
+            left:48%;
+            transform: translate(-50%, -60%);
+            /* half of itself. the C should be in the middle */
+
+            background-clip:text;
+            margin-top:0;
+            z-index:-1;
+            opacity:1;
+            user-select:none;
+            color:#aa8200;
+            text-shadow:15px 10px color-mix(in srgb, black 90%, #aa8200);
+            transition:opacity 0.3s ease;
+        }
+        .title::after {
+            /* subtitle. "an interactive fiction" or like "USA". dont know if i actually want but its here */
+            content:'an interactive fiction';
+            font-size:0.2em;
+            position:absolute;
+            top:6em;
+            right:0;
+            text-shadow:8px 6px color-mix(in srgb, black 90%, #aa8200);
+            font-family:'Wilden';
+            font-weight: bold;
+            font-variant-caps: small-caps;
+        }
+    </style>
+    <script>
+        // this is basically Do Not Touch type code. I dont know what it does but
+        // it doesnt look good when i fuck with it
+        let percentHeight = .85
+        let fancymath = (100/window.innerHeight)*10
+        percentHeight = Math.min(fancymath, 1)
+        window.addEventListener("resize", () => {
+            fancymath = (100/window.innerHeight)*10
+            percentHeight = Math.max(.85, Math.min(fancymath, 1))
+            document.querySelector('.panel').style.height = window.innerHeight*percentHeight+"px"
+            document.querySelector(":root").style.setProperty("--halfPadding", (window.innerWidth/2)+"px")
+        })
+        document.querySelector('.panel').style.height = window.innerHeight*percentHeight+"px";
+
+        document.querySelector(":root").style.setProperty("--halfPadding", (window.innerWidth/2)+"px")
+
+        document.getElementById('textarea').addEventListener("scroll", () => {
+            let textarea = document.getElementById('textarea');
+
+            //  && textarea.scrollTop - textarea.scrollTopMax > 0)
+            if(textarea.scrollTop - textarea.scrollTopMax <= 15) {
+                // document.getElementById('textarea').style.borderBottom = '1px solid #888'
+            } else {
+                document.getElementById('textarea').style.borderBottom = 'none'
+            }
+            console.log('scroll')
+        })
+    </script>
+
+    <script src="./ingine.js" type="application/javascript"></script>
+    <script src="./game.js" type="application/javascript"></script>
+    <script src="./index.js" type="application/javascript"></script>
+</body>

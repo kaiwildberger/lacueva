@@ -139,6 +139,8 @@ function run(oldchoice = null) {
             setTimeout(() => {
                 // choice text is sent back to the function to be displayed along with the next scene text
                 run(e.text)
+                // choice displays next to new text marker. is not persistent;
+                ntMarker.innerHTML = `— <span style="color:#888;">${e.title}</span>`
             }, choicedelay)
             gamescene.name = current.name
         })
